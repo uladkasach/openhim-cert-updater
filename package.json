@@ -1,0 +1,12 @@
+{
+  "name": "openhim-cert-updater",
+  "version": "1.0.0",
+  "description": "Enables triggering an update of local OHIM certificate and informing remote, relevant OHIM machines about update.",
+  "main": "update_certificates.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "UladKasach",
+  "license": "MIT",
+  "private": true
+}

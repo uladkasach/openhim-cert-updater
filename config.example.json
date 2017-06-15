@@ -1,0 +1,10 @@
+{
+    "user" : {
+        "email" : "root@openhim.org",
+        "password" : "openhim-password"
+    }, 
+    "machines":{
+        "local":"localhost:8080",
+        "remote":[]
+    }
+}
