@@ -1,0 +1,24 @@
+{
+    "users" : {
+        "localhost:8080" : {
+            "email" : "root@openhim.org",
+            "password" : "openhim-password"
+        },
+        "localhost:28080" : {
+            "email" : "root@openhim.org",
+            "password" : "openhim-password"
+        },
+        "localhost:38080" : {
+            "email" : "root@openhim.org",
+            "password" : "openhim-password"
+        }
+    }, 
+    "machines":{
+        "local":"localhost:8080",
+        "remote":["localhost:28080","localhost:38080"]
+    },
+    "paths" : {
+        "cert" : "/etc/ssl/certs/ohim-selfsigned.crt",
+        "key" : "/etc/ssl/private/ohim-selfsigned.key"
+    }
+}

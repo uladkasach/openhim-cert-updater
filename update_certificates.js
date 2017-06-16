@@ -11,11 +11,10 @@
 var command_line_arguments = process.argv;
 
 // Load config
-var config = require('./config.json');
+var config = require('./config/config.json');
 
 // Load interface
-var ohim = require("./ohim_highlevel_interface.js");
-//console.log(api);
+var ohim = require("./abstractions/ohim_highlevel_interface.js");
 
 // initialize interface api
 ohim.initialize(config.users);
@@ -87,7 +86,7 @@ for(var i = 0; i < config.machines.remote.length; i++){
         ohim.get_trusted_certs(config.machines.remote[i], resolve);
     }));
 }
-// create a set of promises which waits for both the one fingerprint and the get certs (per machine) promises to be resolved (one for each machine)
+// create a set of promises which waits for both the one fingerprint and the get certs (for the respective machine) promises to be resolved for each machine
 var set_of_promised_certs_and_fingerprint_together = [];
 for(var i = 0; i < set_of_promised_trusted_certs.length; i++){
     set_of_promised_certs_and_fingerprint_together.push(Promise.all([set_of_promised_trusted_certs[i], get_fingerprint_for_local_machines_old_cert]));

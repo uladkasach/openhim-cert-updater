@@ -1,17 +1,42 @@
-## api.js
-This object manages making requests to each machine. Its primary purpose is to keep track of authentication information, such as the requried header data. 
+# openhim-cert-updater
+`openhim-cert-updater` is an NPM package that handles informing both local and remote OpenHIM installations about ssl certificate updates/renewals.
 
-It authenticates the user and generates the authentication header data for each machine, upon the first request to each machine, using the `api.retreive_authentication_headers_for_machine()` method. 
+## Usage
+
+00. Prerequisites  
+  - [Install node and npm](http://letmegooglethatforyou.com/?q=how+to+install+node+and+npm) 
+0. Install
+  - from NPM repository 
+    - `npm install -U openhim-cert-updater`
+  - from sourcecode
+    - navigate to root directory
+    - `npm install`
+1. Setup your `config.json`
+  0. create a `config/config.json` file by copying the `config/config.example.json` file 
+    - `cp config/config.example.json config/config.json`
+  1. edit the `config/config.json` to reflect your configuration
+    - define the `host:port` of each OpenHIM installation (local and remote) that need to be updated
+        - local is required
+        - remote is optional
+    - define the `email` and `password` for each machine (required), identified by `host:port`, in the `config.users` object. 
+        - e.g., `"localhost:8080" : { "email" : "root@openhim.org",  "password" : "openhim-password" }`
+    - define the `paths.cert` and `paths.key` paths to the most up to date `cert` and `key` for this machine's OpenHIM installation
+2. Use
+  - `sudo nodejs update_certificates.js`
+
+## Overview
+
+The script `update_certificates.js` does several things:
+0. Checks whether the `cert` and `key` found at `config.paths` is different than the one recorded in the local OpenHIM installation 
+  - if they are the same, then the script terminates because there is no update that is requried.
+1. Updates the local OpenHIM installation with the most up to date `cert` and `key` available.   
+  - Replaces the `cert` and `key` of the local OpenHIM installation with the `cert` and `key` found at the specified `config.paths`. 
+2. "Informs" the remote OpenHIM installations about the most up to date `cert` for this local machine
+  - Adds the new `cert` to the `trusted ca certs` of all `config.machines.remote` machines.
+3. Cleans up the `trusted ca certs` list of each `config.machines.remote` machine.
+  - Removes the `old_cert` from the `trusted ca certs` list of each `config.machines.remote` machine.
+
+The package includes an `openhim-request-api` which handles creating properly authenticated requests and an `openhim-toplevel-interface` that creates an easy to use layer of abstraction, implementing the various API calls availible per the [openhim RESTful api](http://openhim.readthedocs.io/en/latest/dev-guide/api-ref.html).
 
 
-## config.js.example
-This document stores an example configuration file, defining which data is required for this to opporate properly. It is an example file because the real file will contain sensitive information, such as passwords.  
-
-#### Setup
-- Ensure that you create a `config.json` file in the same directory (`cp config.js.example config.js`) and update the contents to your setup.
-
-#### Notes
-- `user` defines the authentication information that will be used to access every machine
-- `machines` are machines that the certificate update process affects, including:
-    - local machine, which is the machine which had it's certificates updated
-    - remote machines, which are the machines that communicate with the local machine and need to be notified about the certificate update
+## Implementation

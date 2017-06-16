@@ -51,7 +51,7 @@ module.exports = {
     
     
     update_cert_and_key : function(target_machine, key, cert){
-        // POST keystore/key, http://openhimim.readthedocs.io/en/latest/dev-guide/api-ref.html#sets-the-him-server-key
+        // POST keystore/key, http://openhim.readthedocs.io/en/latest/dev-guide/api-ref.html#sets-the-him-server-key
         var request_options = {
             path : "/keystore/key",
             method : "POST",

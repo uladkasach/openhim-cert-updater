@@ -8,5 +8,18 @@
   },
   "author": "UladKasach",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "crypto-js": "^3.1.9-1"
+  },
+  "keywords": [
+    "openhim",
+    "certificate",
+    "cert"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uladkasach/openhim-cert-updater.git"
+  },
+  "bugs": "https://github.com/uladkasach/openhim-cert-updater/issues"
 }
