@@ -1,12 +1,13 @@
 module.exports = {
     CryptoJS : require("crypto-js"), // imported javascript object
     
-    user : null, // user data is stored here for authentication purposes
+    users : null, // user data is stored here for authentication purposes
     auth : {}, // authentication data is stored here for the same reason - but distinct as it is distinct for each machine that we contact and it is generated through API 
                // auth is "keyed" by target_machine's
                // an object is added for each machine upon the first run of a request to it. 
                // it stores the header information which is required for requests.
     request_handler : require("./request_handler.js"),  // require http module for making requestsvar 
+    default_callback : function(res) { res.on('data', function (chunk) {  console.log('CHUNK[0]: ' + chunk + "\n"); }.bind(this)); }.bind(this),
     
     
     ///////////////////////////////////
@@ -29,7 +30,7 @@ module.exports = {
         var hash = sha512.finalize().toString(this.CryptoJS.enc.Hex);
         
         var authentication_data = {
-            'auth-username' : this.user.email,
+            'auth-username' : this.users[target_machine].email,
             'auth-ts' : request_timestamp,
             'auth-salt' : request_salt,
             'auth-token' : hash
@@ -62,7 +63,7 @@ module.exports = {
         var request_options = {
             host: host,
             port: port,
-            path: "/authenticate/" + this.user.email,
+            path: "/authenticate/" + this.users[target_machine].email,
             method: 'GET',
             use_ssl : true,
         }
@@ -89,7 +90,7 @@ module.exports = {
         
         var sha512 = this.CryptoJS.algo.SHA512.create();
         sha512.update(auth_response.salt);
-        sha512.update(this.user.password);
+        sha512.update(this.users[target_machine].password);
         var hash = sha512.finalize().toString(this.CryptoJS.enc.Hex);
         this.auth[target_machine].hash = hash;
         console.log("Authentication for target_machine `" + target_machine + "` was successful.");
@@ -101,7 +102,7 @@ module.exports = {
     send_request : function(target_machine, request_options, callback){
         // ensure request_type is valid
         var request_method = request_options.method;
-        if(["POST", "GET"].indexOf(request_method) == -1){
+        if(["POST", "GET", "DELETE"].indexOf(request_method) == -1){
             console.error("request method (" + request_method + ") is not valid for request_handler.send_request.");
             return false;
         }
@@ -118,6 +119,9 @@ module.exports = {
         var parts = target_machine.split(":");
         var host = parts[0];
         var port = parts[1];
+        
+        // define the callback if needed
+        if(typeof callback === "undefined") callback = this.default_callback;
         
         
         // define header data
@@ -136,36 +140,6 @@ module.exports = {
         }
         console.log("Sending request " + request_options.method + " " + target_machine + request_options.path + "...");
         this.request_handler.send_request(request_options, callback);
-        
-        /*
-        var request_options = {
-            path : "keystore/cert",
-            type : "GET",
-        }
-        */
-
-
-        /*
-        request_options = {
-            host: 'www.google.com',
-            port: 80,
-            path: '/',
-            method: 'GET',
-        }
-        //console.log(api.request_handler);
-
-        callback = function(res) {
-          console.log('STATUS: ' + res.statusCode);
-          console.log('HEADERS: ' + JSON.stringify(res.headers));
-          res.setEncoding('utf8');
-          res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-          });
-        }
-        api.request_handler.send_request(request_options, callback);
-        */
-        
-        
         
     },
     /////////////////////////////////////

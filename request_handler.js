@@ -22,7 +22,7 @@ module.exports = {
         /////////////
         // request type
         var request_method = request_options.method;
-        if(["POST", "GET"].indexOf(request_method) == -1){
+        if(["POST", "GET", "DELETE"].indexOf(request_method) == -1){
             console.error("request method (" + request_method + ") is not valid for request_handler.send_request.");
             return false;
         }
