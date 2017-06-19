@@ -57,11 +57,19 @@ Run OpenHIM with Vagrant
         config.vm.network "forwarded_port", guest: 8080, host: 8080\n
         EOF
         ```
+        - Create the `openhim-core` provision to start server on every `vagrant up`
+        ```
+        cat > always_run.txt <<EOF
+        # Configure openhim-core to start every up\n
+        config.vm.provision :shell, run: 'always', inline: 'openhim-core'
+        EOF
+        ```
         - Add configs and provisioners to the Vagrant file, before the last line
             ```
             contents=$(cat virtual_machine_config.txt); sed -i '$i'"$(echo $contents)" Vagrantfile;
             contents=$(cat port_forwarding.txt); sed -i '$i'"$(echo $contents)" Vagrantfile;
             sed -i '$i'"$(echo 'config.vm.provision "shell", path: "provision_ohim_core.sh"')" Vagrantfile;
+            contents=$(cat always_run.txt); sed -i '$i'"$(echo $contents)" Vagrantfile;
             ```
     - Start the vagrant
         - `vagrant up --provider virtualbox`

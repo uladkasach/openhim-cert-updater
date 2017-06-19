@@ -29,7 +29,7 @@ var from_filesystem = {
 };
 
 // prettyfy terminal
-console.log("---------------- BEGIN UPDATE_CERTIFICATES.JS ----------------\n");
+console.log("\n---------------- BEGIN UPDATE_CERTIFICATES.JS ----------------\n");
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,12 +39,25 @@ var retreive_old_cert_from_local = new Promise((resolve, reject) => {
     ohim.get_cert(config.machines.local, resolve);
 });
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// verify that old certificate is different from the current certificate in the file system
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var resolve_with_certificate_if_update_required = retreive_old_cert_from_local.then((data)=>{
+    return new Promise((resolve, reject)=>{
+        var old_certificate = JSON.parse(data.body)["data"].split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
+        var cur_certificate = from_filesystem.cert.split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
+        if(old_certificate == cur_certificate){
+            console.log("\nOld certificate and current certificate are equivalent. No updates will be conducted.\n");
+        } else {
+            resolve(data);
+        }
+    })
+})
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // update cert and key of local machine  -- after we retreive the old cert from local
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var update_cert_and_key_of_local = retreive_old_cert_from_local.then((data) => {
+var update_cert_and_key_of_local = resolve_with_certificate_if_update_required.then((data) => {
     return new Promise((resolve, reject) => {
         ohim.update_cert_and_key(config.machines.local, from_filesystem.key, from_filesystem.cert);
     });
@@ -53,10 +66,12 @@ var update_cert_and_key_of_local = retreive_old_cert_from_local.then((data) => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // add new trusted cert to all remote machines
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var add_new_truted_cert_to_all_remote_machines = new Promise((resolve, reject) => {
-    for(var i = 0; i < config.machines.remote.length; i++){
-        ohim.add_trusted_cert(config.machines.remote[i], cert);
-    }
+var add_new_truted_cert_to_all_remote_machines = resolve_with_certificate_if_update_required.then((data) =>{
+    return new Promise((resolve, reject) => {
+        for(var i = 0; i < config.machines.remote.length; i++){
+            ohim.add_trusted_cert(config.machines.remote[i], from_filesystem.cert);
+        }
+    });
 });
 
 
@@ -71,7 +86,7 @@ var add_new_truted_cert_to_all_remote_machines = new Promise((resolve, reject) =
 */
 
 // get fingerprint for local machine's old cert
-var get_fingerprint_for_local_machines_old_cert = retreive_old_cert_from_local.then((data) => {
+var get_fingerprint_for_local_machines_old_cert = resolve_with_certificate_if_update_required.then((data) => {
     return new Promise((resolve, reject) => {
         var old_cert = JSON.parse(data.body);
         var old_cert_fingerprint = old_cert.fingerprint;

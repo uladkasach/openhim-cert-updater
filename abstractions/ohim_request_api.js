@@ -48,7 +48,7 @@ module.exports = {
             console.log("authentication pending...");
             return "pending";
         } else if (this.auth[target_machine] === "failure"){
-            console.log("Authentication to machine " + target_machine + " resulted in failure.");
+            //console.log("Authentication to machine " + target_machine + " resulted in failure.");
             return "failure";
         }else {
             console.log("Authentication request triggered for an already authenticated target_machine");
@@ -80,7 +80,8 @@ module.exports = {
             }.bind(this));
         }.bind(this);
         var error_callback = function(e){
-            console.log(e);
+            console.log("Authentication to machine " + target_machine + " resulted in failure: \n" + JSON.stringify(e));;
+            //console.log(e);
             this.auth[target_machine] = "failure";
             //console.log("\n Authentication failed. Terminating.")
             //process.exit(); // terminate the program after receiving an error authenticating.
