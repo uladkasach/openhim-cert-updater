@@ -2,7 +2,7 @@ module.exports = {
     http : require("http"),
     https : require("https"),
     
-    send_request(request_options, callback){
+    send_request(request_options, callback, error_callback){
         //////////////
         // define request options
         //////////////
@@ -44,6 +44,7 @@ module.exports = {
         //console.log(options);
         //console.log(request_options.data);
         var error_function = function(e){console.log('ERROR: ' + e.message); console.log(e); };
+        if(typeof error_callback !== 'undefined') error_function = error_callback;
         var req = protocall.request(options, callback).on('error', error_function);
         if(request_options.method == "POST") req.write(request_options.data);
         req.end();

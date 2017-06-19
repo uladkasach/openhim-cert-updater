@@ -47,7 +47,10 @@ module.exports = {
         } else if(this.auth[target_machine] === "pending"){
             console.log("authentication pending...");
             return "pending";
-        } else {
+        } else if (this.auth[target_machine] === "failure"){
+            console.log("Authentication to machine " + target_machine + " resulted in failure.");
+            return "failure";
+        }else {
             console.log("Authentication request triggered for an already authenticated target_machine");
             return true;
         }
@@ -76,7 +79,13 @@ module.exports = {
                 this.authenticate_user_for_machine(JSON.parse(chunk), target_machine);
             }.bind(this));
         }.bind(this);
-        this.request_handler.send_request(request_options, callback);
+        var error_callback = function(e){
+            console.log(e);
+            this.auth[target_machine] = "failure";
+            //console.log("\n Authentication failed. Terminating.")
+            //process.exit(); // terminate the program after receiving an error authenticating.
+        }.bind(this);
+        this.request_handler.send_request(request_options, callback, error_callback);
         
     },
     // handle the response to the auth data retreived from the target_machine for this user
@@ -110,7 +119,8 @@ module.exports = {
         // get authentication data
         var authentication_data = this.retreive_authentication_data(target_machine);
         if(authentication_data == false){
-            this.request_authentication(target_machine); // request authentication
+            var request_status = this.request_authentication(target_machine); // request authentication
+            if(request_status == "failure") return;
             setTimeout(function(){ this.send_request(target_machine, request_options, callback) }.bind(this), 200); // try again in 300 ms.
             return;
         }
