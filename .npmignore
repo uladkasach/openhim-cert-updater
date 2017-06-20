@@ -1,2 +1,3 @@
 node_modules/*
 packaging/*
+config/config.json

@@ -53,21 +53,30 @@ echo "Done."
 for TARGET in "${TARGETS[@]}"
 do
     TARGETDIR=$PACKAGINGHOME/targets/$TARGET
-
-    ## Define next build number
-    RLS=`$HEAD -1 $TARGETDIR/debian/changelog | $AWK '{print $2}' | $AWK -F~ '{print $1}' | $AWK -F\( '{print $2}'`
-    echo "Last build number is $RLS"
-    echo "What should the next build number be?"
-    read BUILDNO
     
-    ## Define next build name
+    ## Get current build
+    RLS=`$HEAD -1 $TARGETDIR/debian/changelog | $AWK '{print $2}' | $AWK -F~ '{print $1}' | $AWK -F\( '{print $2}'`
+    BUILDNO=$RLS
+
+    echo "Would you like to increment the build number? [y/N] ";
+    read BOOLNEWBUILD
+    
+    if [[ "$BOOLNEWBUILD" == "y" || "$BOOLNEWBUILD" == "Y" ]]; then
+        ## Define next build number
+        echo "Last build number is $RLS"
+        echo "What should the next build number be?"
+        read BUILDNO
+
+
+        # Update changelog
+        cd $TARGETDIR
+        echo "Updating changelog for build ..."
+        $DCH -Mv "${BUILDNO}~${TARGET}" --distribution "${TARGET}" "Release Debian Build ${OPENHIM_VERSION}-${BUILDNO}."
+    fi
+
+    ## Define build name
     BUILD=${PKG}_${BUILDNO}~${TARGET}
     echo "Building $BUILD ..."
-
-    # Update changelog
-    cd $TARGETDIR
-    echo "Updating changelog for build ..."
-    $DCH -Mv "${BUILDNO}~${TARGET}" --distribution "${TARGET}" "Release Debian Build ${OPENHIM_VERSION}-${BUILDNO}."
 
     # Clear and create packaging directory
     PKGDIR=${BUILDDIR}/${BUILD}
