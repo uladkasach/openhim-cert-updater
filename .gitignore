@@ -2,3 +2,4 @@ config.json
 packaging/.*
 packaging/builds/*
 *npm-debug.log
+node_modules/*
