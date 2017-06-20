@@ -19,6 +19,5 @@
         - `sudo apt-get install -f`
         
 0. Test the PPA 
-    - `sudo add-apt-repository ppa:uladkasach/dev`
-    - `sudo apt-get update`
+    - `sudo add-apt-repository ppa:uladkasach/dev && sudo apt-get update && sudo apt-get -y install openhim-cert-updater`
     - `openhim-cert-updater`

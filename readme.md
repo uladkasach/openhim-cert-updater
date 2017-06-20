@@ -16,7 +16,14 @@
         - creating authenticated requests to openhim (`ohim_request_api`)
         - manipulating openhim configurations through the openhim-core api (`ohim_highlevel_interface`)
 
-## Installation
+## Installation From PPA
+0. Install from PPA
+    - `sudo add-apt-repository ppa:uladkasach/dev && sudo apt-get update && sudo apt-get -y install openhim-cert-updater`
+1. Setup `config.json`
+2. Test installation
+    - `openhim-cert-updater`
+
+## Installation From Source
 00. Prerequisites  
     - [Install node and npm](http://letmegooglethatforyou.com/?q=how+to+install+node+and+npm) 
 0. Install
@@ -25,19 +32,21 @@
     - from sourcecode
         - navigate to root directory
         - `npm install`
-1. Setup your `config.json`
-    0. create a `config/config.json` file by copying the `config/config.example.json` file 
-        - `cp config/config.example.json config/config.json`
-    1. edit the `config/config.json` to reflect your configuration
-        - define the `host:port` of each OpenHIM installation (local and remote) that need to be updated
-            - local is required
-            - remote is optional
-        - define the `email` and `password` for each machine (required), identified by `host:port`, in the `config.users` object. 
-            - e.g., `"localhost:8080" : { "email" : "root@openhim.org",  "password" : "openhim-password" }`
-        - define the `paths.cert` and `paths.key` paths to the most up to date `cert` and `key` for this machine's OpenHIM installation
+1. Setup `config.json`
+    - See below
 2. Test it out
     - `sudo nodejs update_certificates.js`
 
+## Setup Config.json
+0. create a `config/config.json` file by copying the `config/config.example.json` file 
+    - `cp config/config.example.json config/config.json`
+1. edit the `config/config.json` to reflect your configuration
+    - define the `host:port` of each OpenHIM installation (local and remote) that need to be updated
+        - local is required
+        - remote is optional
+    - define the `email` and `password` for each machine (required), identified by `host:port`, in the `config.users` object. 
+        - e.g., `"localhost:8080" : { "email" : "root@openhim.org",  "password" : "openhim-password" }`
+    - define the `paths.cert` and `paths.key` paths to the most up to date `cert` and `key` for this machine's OpenHIM installation
 
 ## Implementation
 The script `update_certificates.js` does several things:
