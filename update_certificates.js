@@ -47,7 +47,7 @@ var resolve_with_certificate_if_update_required = retreive_old_cert_from_local.t
         var old_certificate = JSON.parse(data.body)["data"].split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
         var cur_certificate = from_filesystem.cert.split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
         if(old_certificate == cur_certificate){
-            console.log("\nOld certificate and current certificate are equivalent. No updates will be conducted.\n");
+            console.log("\nOld certificate and current certificate are equivalent. \n");
         } else {
             resolve(data);
         }
@@ -63,15 +63,48 @@ var update_cert_and_key_of_local = resolve_with_certificate_if_update_required.t
     });
 });
 
+
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// add new trusted cert to all remote machines
+// get all trusted certificates foreach remote machine
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var add_new_truted_cert_to_all_remote_machines = resolve_with_certificate_if_update_required.then((data) =>{
-    return new Promise((resolve, reject) => {
-        for(var i = 0; i < config.machines.remote.length; i++){
-            ohim.add_trusted_cert(config.machines.remote[i], from_filesystem.cert);
+var set_of_promised_trusted_certs = [];
+for(var i = 0; i < config.machines.remote.length; i++){
+    set_of_promised_trusted_certs.push(new Promise((resolve, reject) => {
+        //console.log("getting trusted certificates for " + config.machines.remote[i]);
+        ohim.get_trusted_certs(config.machines.remote[i], resolve);
+    }));
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// add new trusted cert to all remote machines who do not already have it
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var promise_all_machines_who_need_new_key_added = Promise.all(set_of_promised_trusted_certs).then((data_array)=>{
+    // return list of machines who do not have current cert 
+    var machines_without_cert = [];
+    for (var i = 0; i < data_array.length; i++){
+        var this_machine = data_array[i].target_machine;
+        var these_certs = JSON.parse(data_array[i].body);
+        var found = false;
+        var cur_certificate = from_filesystem.cert.split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
+        for(var j = 0; j < these_certs.length; j++){
+            var this_certificate = these_certs[j].data.split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
+            if(this_certificate == cur_certificate){
+                found = true;
+                break;
+            }
         }
-    });
+        if(found == false) machines_without_cert.push(this_machine);
+    }
+    return machines_without_cert;
+});
+var add_new_truted_cert_to_all_remote_machines_without_cert = promise_all_machines_who_need_new_key_added.then((machines_without_cert) =>{ 
+    // Note, this should run every time regardless of whether the old and current certificates are the same
+    // - since it is possible there was a connection error with a remote machine and it did not get the new cert on last update
+    for(var i = 0; i < machines_without_cert.length; i++){
+        ohim.add_trusted_cert(machines_without_cert[i], from_filesystem.cert);
+    }
 });
 
 
@@ -80,7 +113,7 @@ var add_new_truted_cert_to_all_remote_machines = resolve_with_certificate_if_upd
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
     1. Get fingerprint for local machines machine old cert (this must be done before updating current key, completed by implementing all functionality on this script in form of promises)
-    2. foreach remote machine, get all trusted certs
+    2. foreach remote machine, get all trusted certs (done previously)
     3. for each set of certs, use the fingerprint and find the _ids that correspond to that fingerprint
     4. for each corresponding _id, remove that cert from that machine
 */
@@ -93,14 +126,6 @@ var get_fingerprint_for_local_machines_old_cert = resolve_with_certificate_if_up
         resolve(old_cert_fingerprint);
     });
 });
-// for each machine, get a set of trusted certificates (returns a list of promises)
-var set_of_promised_trusted_certs = [];
-for(var i = 0; i < config.machines.remote.length; i++){
-    set_of_promised_trusted_certs.push(new Promise((resolve, reject) => {
-        //console.log("getting trusted certificates for " + config.machines.remote[i]);
-        ohim.get_trusted_certs(config.machines.remote[i], resolve);
-    }));
-}
 // create a set of promises which waits for both the one fingerprint and the get certs (for the respective machine) promises to be resolved for each machine
 var set_of_promised_certs_and_fingerprint_together = [];
 for(var i = 0; i < set_of_promised_trusted_certs.length; i++){
@@ -118,7 +143,7 @@ set_of_promised_certs_and_fingerprint_together.forEach(function(promise){
             var this_cert = all_trusted_certs[i];
             if(this_cert.fingerprint == old_fingerprint) ids_to_remove.push(this_cert._id);
         }
-        console.log("number of ids to remove for " + target_machine + " : " + ids_to_remove.length)
+        //console.log("number of ids to remove for " + target_machine + " : " + ids_to_remove.length)
         
         // build list of promises to return;
         for(var i = 0; i < ids_to_remove.length; i++){

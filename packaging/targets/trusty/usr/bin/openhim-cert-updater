@@ -11,16 +11,25 @@ if [ ! -d "$DIRECTORY" ]; then
 fi
 
 
-# Ensure config file was created
-CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
-if [ ! -f "$CONFIGFILE" ]; then
-    echo "The configuration file (config.json) was not found at the expected location."
-    echo "Are you sure it was created?"
-    echo "See https://github.com/uladkasach/openhim-cert-updater for details."
-    exit 1;
+if [[ "$1" == "--config" || "$1" == "-c" ]]; then 
+    echo "Starting configuration proces...";
+    echo " ";
+
+    cd "$DIRECTORY";
+    sudo nodejs "setup_config.js";
+
+else
+    # Ensure config file was created
+    CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
+    if [ ! -f "$CONFIGFILE" ]; then
+        echo "The configuration file (config.json) was not found at the expected location."
+        echo "Are you sure it was created?"
+        echo "See https://github.com/uladkasach/openhim-cert-updater for details."
+        exit 1;
+    fi
+
+    echo "Successful installation detected. Starting updating proces...";
+
+    cd "$DIRECTORY";
+    sudo nodejs "update_certificates.js";
 fi
-
-echo "Successful installation detected. Starting updating proces...";
-
-cd "$DIRECTORY";
-sudo nodejs "update_certificates.js";

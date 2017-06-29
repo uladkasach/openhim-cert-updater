@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo "Running openhim-cert-updater setup now."
+
+openhim-cert-updater -c

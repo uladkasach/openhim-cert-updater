@@ -80,7 +80,7 @@ module.exports = {
             data : JSON.stringify({"cert" : cert}),
             data_type : "json",
         }
-        var callback =  function(res) { res.on('data', function (chunk) {  console.log('ADD TRUSTED REMOTE CERT TO `'+ target_machine + '` RESPONSE: ' + chunk); }.bind(this)); }.bind(this);
+        var callback =  function(res) { res.on('data', function (chunk) {  console.log('ADD TRUSTED CERT TO REMOTE `'+ target_machine + '` RESPONSE: ' + chunk); }.bind(this)); }.bind(this);
         this.api.send_request(target_machine, request_options, callback);
     },
     
@@ -91,7 +91,7 @@ module.exports = {
             path : "/keystore/ca/" + cert_id,
             method : "DELETE",
         }
-        var callback =  function(res) { res.on('data', function (chunk) {  console.log('REMOVE TRUSTED REMOTE CERT FROM `'+ target_machine + '` RESPONSE: ' + chunk); }.bind(this)); }.bind(this);  
+        var callback =  function(res) { res.on('data', function (chunk) {  console.log('REMOVE TRUSTED CERT FROM REMOTE `'+ target_machine + '` RESPONSE: ' + chunk); }.bind(this)); }.bind(this);  
         this.api.send_request(target_machine, request_options, callback);
     },
     
