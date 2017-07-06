@@ -31,7 +31,6 @@ fs.readFile('./config/config.example.json', (err, data)=>{
     
     console.log(" ")
     console.log(".......................................................................")
-
 })
 */
 
