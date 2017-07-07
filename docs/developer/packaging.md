@@ -4,7 +4,7 @@
         - `openhim-core`
 0. Build packages and test them
     - add cert_work root directory
-        - `export CERTDIR=/var/www/git/Regenstrief/OHIE/certificate_renewal;`
+        - `export CERTDIR=/var/www/Regenstrief/OHIE/certificate_renewal;`
     - build the pacakge
         - set GPG keys
             - e.g., `export DEB_SIGN_KEYID=F516F2E7`

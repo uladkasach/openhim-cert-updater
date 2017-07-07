@@ -17,7 +17,6 @@ if [[ "$1" == "--config" || "$1" == "-c" ]]; then
 
     cd "$DIRECTORY";
     sudo nodejs "setup_config.js";
-
 else
     # Ensure config file was created
     CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
@@ -31,5 +30,10 @@ else
     echo "Successful installation detected. Starting updating proces...";
 
     cd "$DIRECTORY";
-    sudo nodejs "update_certificates.js";
+    
+    if [[ "$1" == "--record" || "$1" == "-r" ]]; then 
+        sudo nodejs update_certificates.js -r;
+    else 
+        sudo nodejs update_certificates.js;
+    fi
 fi

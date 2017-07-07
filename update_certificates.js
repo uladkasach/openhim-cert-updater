@@ -36,9 +36,9 @@ console.log("\n---------------- BEGIN UPDATE_CERTIFICATES.JS ----------------\n"
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if(command_line_arguments.indexOf("-r") > -1){
     var fs = require('fs');
-    fs.writeFile("runs.log", "running at " + new Date() + "\n", { flag: 'a+' }, function (err) {
+    fs.writeFile("run.log", "running at " + new Date() + "\n", { flag: 'a+' }, function (err) {
         if (err) throw err;
-        console.log("It's saved!");
+        console.log("run was recorded in run.log (triggered by -r).");
     });
 }
 
