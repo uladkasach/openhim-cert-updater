@@ -15,6 +15,7 @@
     - build it on the vagrant 
         - `cd $CERTDIR/ohim/core; vagrant ssh`
         - `sudo apt-get -y remove openhim-cert-updater`
+            - use `purge` if you want to get rid of the config file too
         - `find /vagrant -name "*.deb" -print0 | xargs --null  sudo dpkg -i; `
         - `sudo apt-get install -f`
         

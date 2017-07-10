@@ -71,7 +71,7 @@ do
         # Update changelog
         cd $TARGETDIR
         echo "Updating changelog for build ..."
-        $DCH -Mv "${BUILDNO}~${TARGET}" --distribution "${TARGET}" "Release Debian Build ${OPENHIM_VERSION}-${BUILDNO}."
+        $DCH -v "${BUILDNO}~${TARGET}" --distribution "${TARGET}" "Release Debian Build ${OPENHIM_VERSION}-${BUILDNO}."
     fi
 
     ## Define build name
