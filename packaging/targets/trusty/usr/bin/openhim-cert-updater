@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Starting openhim-cert-updater...";
+source $HOME/.nvm/nvm.sh && nvm use 6.11
 
 # Ensure openhim-cert-updater is installed
 DIRECTORY="/usr/share/openhim-cert-updater"
@@ -16,7 +17,7 @@ if [[ "$1" == "--config" || "$1" == "-c" ]]; then
     echo " ";
 
     cd "$DIRECTORY";
-    sudo nodejs "setup_config.js";
+    node "setup_config.js";
 else
     # Ensure config file was created
     CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
@@ -32,8 +33,8 @@ else
     cd "$DIRECTORY";
     
     if [[ "$1" == "--record" || "$1" == "-r" ]]; then 
-        sudo nodejs update_certificates.js -r;
+        node update_certificates.js -r;
     else 
-        sudo nodejs update_certificates.js;
+        node update_certificates.js;
     fi
 fi

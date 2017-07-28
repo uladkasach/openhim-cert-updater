@@ -32,6 +32,9 @@ Run OpenHIM with Vagrant
         
         ## Install the OpenHIM-core package globally
         sudo npm install openhim-core -g
+
+        ## Start the server
+        openhim-core &> /dev/null &
         
         echo "Provisioning of provision_ohim_core.sh completed. [Success]."
         EOF

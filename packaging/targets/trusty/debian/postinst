@@ -1,5 +1,14 @@
 #!/bin/sh
 
-echo "Running openhim-cert-updater setup now."
+# update sudo permissions, now that we added a sudoers.d file
+sudo service sudo restart
 
-openhim-cert-updater -c
+# install nvm to ensure correct node version can be used
+echo "Installing NVM and node v 6.11.1 under user openhim_cert_updater..."; ## NOTE: packages build-essential libssl-dev are required for NVM
+sudo su openhim_cert_updater bash -c 'curl https://raw.githubusercontent.com/creationix/nvm/v0.11.1/install.sh | bash'
+sudo su openhim_cert_updater bash -c 'source $HOME/.nvm/nvm.sh && nvm install 6.11.1'
+
+echo "Running openhim-cert-updater setup now."
+sudo su openhim_cert_updater bash -c 'sudo openhim-cert-updater -c'
+
+exit 0;

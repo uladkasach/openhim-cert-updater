@@ -8,7 +8,7 @@ Homepage: github.com/uladkasach/openhim-cert-updater
 
 Package: openhim-cert-updater
 Architecture: amd64
-Depends: curl, mongodb-org, git
+Depends: curl, mongodb-org, git, build-essential, libssl-dev
 Recommends: build-essential, libkrb5-dev
 Description: OpenHIM Certificate Updater
  openhim-cert-updater is an NPM package that handles informing both local and remote OpenHIM installations about ssl certificate updates/renewals on the local machine.

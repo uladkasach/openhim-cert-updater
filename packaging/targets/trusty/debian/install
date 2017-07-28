@@ -1,2 +1,3 @@
 /usr/share/openhim-cert-updater
 /usr/bin 
+/etc/sudoers.d/

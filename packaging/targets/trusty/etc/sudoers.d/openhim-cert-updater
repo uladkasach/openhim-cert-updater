@@ -1,0 +1,3 @@
+# Enable passwordless sudo access for the openhim_cert_updater user
+# Installed by package openhim_cert_updater
+openhim_cert_updater ALL=(ALL) NOPASSWD: /bin/echo, /usr/bin/openhim-cert-updater
