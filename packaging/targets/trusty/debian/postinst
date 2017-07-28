@@ -5,6 +5,7 @@ sudo service sudo restart
 
 # install nvm to ensure correct node version can be used
 echo "Installing NVM and node v 6.11.1 under user openhim_cert_updater..."; ## NOTE: packages build-essential libssl-dev are required for NVM
+# TODO : upgrade to `sudo -H -u openhim_cert_updater sudo openhim-cert-updater` format from `sudo su ...`
 sudo su openhim_cert_updater bash -c 'curl https://raw.githubusercontent.com/creationix/nvm/v0.11.1/install.sh | bash'
 sudo su openhim_cert_updater bash -c 'source $HOME/.nvm/nvm.sh && nvm install 6.11.1'
 
