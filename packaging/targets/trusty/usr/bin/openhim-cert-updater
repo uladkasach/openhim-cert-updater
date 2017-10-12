@@ -5,6 +5,7 @@ source $HOME/.nvm/nvm.sh && nvm use 6.11
 
 # Ensure openhim-cert-updater is installed
 DIRECTORY="/usr/share/openhim-cert-updater"
+CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
 if [ ! -d "$DIRECTORY" ]; then
     echo "openhim-cert-updater was not found at expected location ($DIRECTORY)."
     echo  "Are you sure its installed?"
@@ -12,15 +13,18 @@ if [ ! -d "$DIRECTORY" ]; then
 fi
 
 
-if [[ "$1" == "--config" || "$1" == "-c" ]]; then 
+if [[ "$1" == "--config" || "$1" == "-c" ]]; then
     echo "Starting configuration proces...";
     echo " ";
 
-    cd "$DIRECTORY";
-    node "setup_config.js";
+    if [[ "$2" == "--manual" || "$2" == "-m" ]]; then
+        sudo nano "$CONFIGFILE";
+    else
+        cd "$DIRECTORY";
+        node "setup_config.js";
+    fi
 else
     # Ensure config file was created
-    CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
     if [ ! -f "$CONFIGFILE" ]; then
         echo "The configuration file (config.json) was not found at the expected location."
         echo "Are you sure it was created?"
@@ -31,10 +35,5 @@ else
     echo "Successful installation detected. Starting updating proces...";
 
     cd "$DIRECTORY";
-    
-    if [[ "$1" == "--record" || "$1" == "-r" ]]; then 
-        node update_certificates.js -r;
-    else 
-        node update_certificates.js;
-    fi
+    node update_certificates.js "$@"; ## the $@ is used to pass all arguments through to script.
 fi
