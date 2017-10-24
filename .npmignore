@@ -1,5 +1,5 @@
 node_modules/*
 packaging/*
 config/config.json
-runs.log
-run.log
+.ftpconfig*
+*.log

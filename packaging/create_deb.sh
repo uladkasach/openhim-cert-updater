@@ -25,7 +25,7 @@ if [[ "$UPLOAD" == "y" || "$UPLOAD" == "Y" ]];  then
       echo Using $LAUNCHPADPPALOGIN for Launchpad PPA login
       echo "To Change You can do: export LAUNCHPADPPALOGIN=$LAUNCHPADPPALOGIN"
     else
-      echo -n "Enter your launchpad login for the ppa and press [ENTER]: "
+      echo -n "Enter your launchpad login username (or team name) for the ppa and press [ENTER]: "
       read LAUNCHPADPPALOGIN
       echo "You can do: export LAUNCHPADPPALOGIN=$LAUNCHPADPPALOGIN to avoid this step in the future"
     fi
@@ -53,14 +53,14 @@ echo "Done."
 for TARGET in "${TARGETS[@]}"
 do
     TARGETDIR=$PACKAGINGHOME/targets/$TARGET
-    
+
     ## Get current build
     RLS=`$HEAD -1 $TARGETDIR/debian/changelog | $AWK '{print $2}' | $AWK -F~ '{print $1}' | $AWK -F\( '{print $2}'`
     BUILDNO=$RLS
 
     echo "Would you like to increment the build number? [y/N] ";
     read BOOLNEWBUILD
-    
+
     if [[ "$BOOLNEWBUILD" == "y" || "$BOOLNEWBUILD" == "Y" ]]; then
         ## Define next build number
         echo "Last build number is $RLS"
@@ -103,11 +103,11 @@ do
     	DPKGCMD="debuild -k${DEB_SIGN_KEYID} -S -sa"
         echo "$DPKGCMD"
         $DPKGCMD
-        
+
     	DPUTCMD="dput ppa:$LAUNCHPADPPALOGIN/$PPA ../${BUILD}_source.changes"
         echo "$DPUTCMD"
     	$DPUTCMD
-    else 
+    else
         DPKGCMD="debuild -uc -us"
         $DPKGCMD
     fi

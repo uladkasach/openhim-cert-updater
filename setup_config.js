@@ -123,7 +123,7 @@ var promise_all_remote_machines = promise_local_machine_data.then((data)=>{
     console.log();
     console.log("Writing configuration file...")
     return new Promise((resolve, reject)=>{
-        fs.writeFile("./config/config.json", JSON.stringify(config_json, null, 4)), function(err) {
+        fs.writeFile("./config/config.json", JSON.stringify(config_json, null, 4), function(err) {
             if(err) {
                 return console.log(err);
             }

@@ -41,7 +41,7 @@ process.on('unhandledRejection', (error)=>{
         //console.trace(error);
     } else {
         console.log("ERROR : unhandledRejection : ")
-        console.trace(error); 
+        console.trace(error);
     }
 });
 
@@ -86,8 +86,6 @@ var resolve_with_certificate_if_update_required = retreive_old_cert_from_local.t
     return new Promise((resolve, reject)=>{
         var old_certificate = JSON.parse(data.body)["data"].split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
         var cur_certificate = from_filesystem.cert.split("-----BEGIN CERTIFICATE-----")[1].split("-----END CERTIFICATE-----")[0];
-
-        return resolve(data);
 
         if(old_certificate == cur_certificate){
             console.log("\nOld certificate and current certificate are equivalent. \n");
