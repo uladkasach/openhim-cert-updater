@@ -5,7 +5,7 @@
 - after installing the application with the instructions below, run `sudo nodejs update_certificates.js`
 
 ## Overview
-#### scripts:
+#### scripts
 - `update_certificates.js`
     - This file runs the required updates for all specified ohim-core machines.
     - This file utilizes javascript's `promise` feature for async handling as well as several custom layers of abstraction for communication with ohie-core applications
@@ -19,16 +19,18 @@
         - creating authenticated requests to openhim (`ohim_request_api`)
         - manipulating openhim configurations through the openhim-core api (`ohim_highlevel_interface`)
 
-#### packaged features:
+#### packaged features
 - `openhim-cert-updater`
     - this shell script is installed under `usr/bin/openhim-cert-updater` and thus is callable from the commandline anywhere.
     - arguments
         - no arguments: run `update_certificates.js`
         - `-l` run `update_certificates.js` and log that it ran
-        - `-h <CMD>` run `update_certificates.js` and execute the shell command `<CMD>` if the local certificate was updated 
+        - `-h <CMD>` run `update_certificates.js` and execute the shell command `<CMD>` if the local certificate was updated
+        - `-l -h <CMD>` : do both of the above
         - `-c` calls `setup_config.js` and enables generation of the `config/config.js` file
         - `-c -m` calls `sudo nano $PATH_TO_CONFIG/config.js` and enables user to manually modify the config file
-        -
+    - for example:
+        - `sudo openhim-cert-updater -h `touch ~/done.example'` will create the file `done.example` in your home directory IF the local certificate was updated  
 
 
 ## Installation From PPA
