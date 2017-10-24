@@ -30,7 +30,7 @@
         - `-c` calls `setup_config.js` and enables generation of the `config/config.js` file
         - `-c -m` calls `sudo nano $PATH_TO_CONFIG/config.js` and enables user to manually modify the config file
     - for example:
-        - `sudo openhim-cert-updater -h `touch ~/done.example'` will create the file `done.example` in your home directory IF the local certificate was updated  
+        - `sudo openhim-cert-updater -h 'touch ~/done.example'` will create the file `done.example` in your home directory IF the local certificate was updated  
 
 
 ## Installation From PPA
