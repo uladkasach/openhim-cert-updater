@@ -1,11 +1,18 @@
 "use strict"
 
+// show stack traces on unknown errors
+process.on('unhandledRejection', (error)=>{
+    console.log("ERROR : unhandledRejection : ")
+    console.trace(error);
+});
+
 // used to query user for input
 var readline = require('readline');
 var rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
+
 
 // used to output contents of config.example.json
 var fs = require('fs');
@@ -152,7 +159,7 @@ function promise_loop(promise, fn) {
 // remote_machine_promise question of whether to loop
 function return_remote_machine_loop_question(data){
     return new Promise((resolve, reject)=>{
-        message = (config_json.machines.remote.length == 0) ? "add a remote openhim machine notify of updated certificates?" : "add another remote openhim machine?";
+        var message = (config_json.machines.remote.length == 0) ? "add a remote openhim machine notify of updated certificates?" : "add another remote openhim machine?";
         console.log("Would you like to " + message + " [y/N]");
         rl.question('> ', (answer) => {
             var boolean = answer == "y" || answer === "Y";
