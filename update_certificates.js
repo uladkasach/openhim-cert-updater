@@ -119,6 +119,8 @@ for(var i = 0; i < config.machines.remote.length; i++){
             if(response.body == "Unauthorized"){ // error checking
                 logger.write("Retrieval of certificate for machine " + response.target_machine + " resolved in an Unauthorized Request. Machine could not be updated.");
                 throw {type : "Unauthorized", machine : response.target_machine};
+            } else {
+                return response;
             }
         })
     set_of_promised_trusted_certs.push(promise_to_get_trusted_certs_for_this_machine);
@@ -145,7 +147,7 @@ var promise_all_machines_who_need_new_key_added = Promise.all(set_of_promised_tr
             }
             if(found == false) machines_without_cert.push(this_machine);
         }
-        console.log("machines without cert : " + machines_without_cert);
+        console.log("machines without cert : " + JSON.stringify(machines_without_cert));
         return machines_without_cert;
     });
 var promise_to_add_new_trusted_cert_to_all_remote_machines_without_cert = promise_all_machines_who_need_new_key_added
