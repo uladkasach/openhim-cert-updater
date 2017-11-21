@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# ensure that this is being run as sudo
+if [ "$EUID" -ne 0 ]
+  then echo "WARNING : openhim-cert-updater should be run as sudo"
+  #exit - consider in future exiting if this is not true.
+fi
+
 echo "Starting openhim-cert-updater...";
 source $HOME/.nvm/nvm.sh && nvm use 6.11
 
