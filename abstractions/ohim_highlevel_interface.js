@@ -19,6 +19,7 @@ module.exports = {
         }.bind(this);
     },
 
+
     promise_to_get_trusted_certs : function(target_machine){
         ////////////////////////////////////
         // Get trusted ca certs on a machine
@@ -45,18 +46,27 @@ module.exports = {
             })
     },
 
-    get_cert : function(target_machine, trigger){
+    promise_to_get_cert : function(target_machine){
         var request_options = {
             path : "/keystore/cert",
             method : "GET",
         }
-        var display = {
-            base : 'RETREIVE CERT ON `'+ target_machine + '` RESPONSE: ',
-            status : true,
-        }
-        var prechunk = false;
-        var callback = this.return_callback_function(target_machine, display, trigger);
-        this.api.send_request(target_machine, request_options, callback);
+        return new Promise((resolve, reject)=>{
+                this.api.send_request(target_machine, request_options, resolve);
+            })
+            .then((res)=>{
+                return new Promise((resolve, reject)=>{
+                    console.log('RETREIVE CERT ON `'+ target_machine + '` RESPONSE:  '+ res.statusCode);
+                    var body = "";
+                    res.on('data', function (chunk) {
+                        body += chunk;
+                    });
+                    res.on('end', function() {
+                        // console.log(display.base + body);
+                        return resolve({target_machine : target_machine, body : body});
+                    });
+                })
+            })
     },
 
 
