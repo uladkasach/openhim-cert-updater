@@ -59,6 +59,7 @@ module.exports = {
         // Build Request
         /////////////////////////
         // split target_machine into host and port
+        if(typeof target_machine == "undefined") throw "Target Machine is undefined";
         var parts = target_machine.split(":");
         var host = parts[0];
         var port = parseInt(parts[1]);
@@ -112,8 +113,8 @@ module.exports = {
     send_request : function(target_machine, request_options, callback){
         // ensure request_type is valid
         var request_method = request_options.method;
-        if(["POST", "GET", "DELETE"].indexOf(request_method) == -1){
-            console.error("request method (" + request_method + ") is not valid for request_handler.send_request.");
+        if(["POST", "GET", "DELETE", "PUT"].indexOf(request_method) == -1){
+            console.error("request method (" + request_method + ") is not valid for ohim_request_api.send_request.");
             return false;
         }
 
@@ -137,7 +138,7 @@ module.exports = {
         // define header data
         var header_data = authentication_data;
         if(request_options.data_type == "json") header_data['Content-Type'] = 'application/json';
-        if(request_options.method == "POST") header_data['Content-Length'] = Buffer.byteLength(request_options.data)
+        if(request_options.method == "POST" || request_options.method == "PUT") header_data['Content-Length'] = Buffer.byteLength(request_options.data)
 
         // build request and send it
         var request_options = {

@@ -1,7 +1,7 @@
 module.exports = {
     http : require("http"),
     https : require("https"),
-    
+
     send_request(request_options, callback, error_callback){
         //////////////
         // define request options
@@ -15,20 +15,20 @@ module.exports = {
                 additional_headers : "",
             }
         */
-        
-        
+
+
         /////////////
         // Validate request options
         /////////////
         // request type
         var request_method = request_options.method;
-        if(["POST", "GET", "DELETE"].indexOf(request_method) == -1){
+        if(["POST", "GET", "DELETE", "PUT"].indexOf(request_method) == -1){
             console.error("request method (" + request_method + ") is not valid for request_handler.send_request.");
             return false;
         }
         // secure type
         var use_ssl = (request_options.use_ssl === true) ? true : false; // if not true then false
-        
+
         ////////////
         // send request
         ////////////
@@ -46,7 +46,7 @@ module.exports = {
         var error_function = function(e){console.log('ERROR: ' + e.message); console.log(e); };
         if(typeof error_callback !== 'undefined') error_function = error_callback;
         var req = protocall.request(options, callback).on('error', error_function);
-        if(request_options.method == "POST") req.write(request_options.data);
+        if(request_options.method == "POST" || request_options.method == "PUT") req.write(request_options.data);
         req.end();
         //req.end();
         /*

@@ -56,12 +56,16 @@ ohim.initialize(config.users);
 
 // get local cert and key from filesystem
 var fs = require('fs');
+var x509 = require('x509');
 var cert = fs.readFileSync(config.paths.cert, "utf8");
 var key = fs.readFileSync(config.paths.key, "utf8");
+var fingerprint = x509.parseCert(cert)["fingerPrint"];
 var from_filesystem = {
     cert : cert,
     key : key,
+    fingerprint : fingerprint,
 };
+
 
 // prettyfy terminal
 console.log("\n---------------- BEGIN UPDATE_CERTIFICATES.JS ----------------\n");
@@ -70,7 +74,6 @@ console.log("\n---------------- BEGIN UPDATE_CERTIFICATES.JS ----------------\n"
 // record that the script has been run if command line argument is set
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if(commandline_options.log) logger.write("running at " + new Date())
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // retreive old certificate from local
@@ -160,6 +163,62 @@ var promise_to_add_new_trusted_cert_to_all_remote_machines_without_cert = promis
         return Promise.all(promise_additions);
     });
 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// update clients (defined in config for each machine) on remote machines to utilize the new certificate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Build list of (target_machine, client_id) tuples for which the client needs the new certificate fingerprint
+var client_target_machines = Object.keys(config.clients); // grab each target_machine for whom clients were defined
+var client_machine_pairs = [];
+for (var i = 0; i < client_target_machines.length; i++){ // for every target machine
+    var this_target_machine = client_target_machines[i];
+    var these_clients = config.clients[this_target_machine]; // grab the clients requested to be updated
+    these_clients.forEach((client)=>{ // and for each client
+        client_machine_pairs.push([this_target_machine, client]); // add a (target_machine, client_id) tuple to the client_machine_pairs list
+    })
+}
+
+// Build list of promises to update the certificate fingerprint of each of the requested clients
+var promises_to_update_clients = [];
+for(var i = 0; i < client_machine_pairs.length; i++){
+    var this_pair = client_machine_pairs[i];
+    var this_target_machine = this_pair[0];
+    var this_client_id = this_pair[1];
+
+    // 1: find the client by name/"clientID" from the list of clients on that machine
+    var target_client_id = this_client_id;
+    var promise_to_fetch_target_client_by_name = ohim.promise_to_fetch_all_clients(this_target_machine)
+        .then((response)=>{
+            var data = JSON.parse(response.body);
+            for(var i=0; i < data.length; i++){ // find desired client
+                let this_data = data[i];
+                if(this_data.clientID == target_client_id){
+                    var target_client = this_data;
+                    break;
+                }
+            }
+            if(typeof target_client == "undefined") throw "Target Client " + target_client_id + " not found"; // throw error if not found
+            return target_client // return target client, since found
+        })
+        .then((client)=>{
+            return ohim.promise_to_fetch_a_client(this_target_machine, client._id); // fetch client individually now that we have its ._id
+        })
+    // 2: update the client data and send the updated data to the target machine, completing the update
+    var promise_to_update_the_client = promise_to_fetch_target_client_by_name
+        .then((response)=>{
+            var target_machine = response.target_machine;
+            var client = JSON.parse(response.body);
+            var new_fingerprint = from_filesystem.fingerprint;
+            if(client.certFingerprint == new_fingerprint) return; // if client already has this cert, then we are already done.
+            client.certFingerprint = new_fingerprint; // update fingerprint of client
+            return ohim.promise_to_update_a_client(target_machine, client) // send update request
+                .then((response)=>{
+                    if(response.status !== 200) throw "There was an error updating client `" + this_client_id +"` on machine `"+this_target_machine+"`";
+                })
+        })
+}
+var promise_all_clients_updated = Promise.all(promises_to_update_clients);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // remove old trusted cert from all remote machines

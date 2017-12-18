@@ -4,3 +4,4 @@ node_modules/*
 runs.log
 .ftpconfig*
 *.log
+_next_steps.md

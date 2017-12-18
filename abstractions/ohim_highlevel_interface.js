@@ -19,6 +19,79 @@ module.exports = {
         }.bind(this);
     },
 
+    promise_to_fetch_all_clients : function(target_machine){
+        var request_options = {
+            path : "/clients",
+            method : "GET",
+        }
+        return new Promise((resolve, reject)=>{
+                this.api.send_request(target_machine, request_options, resolve);
+            })
+            .then((res)=>{
+                return new Promise((resolve, reject)=>{
+                    console.log('GET CLIENTS FROM `'+ target_machine + '` RESPONSE:  '+ res.statusCode);
+                    var body = "";
+                    res.on('data', function (chunk) {
+                        body += chunk;
+                    });
+                    res.on('end', function() {
+                        // console.log(display.base + body);
+                        return resolve({target_machine : target_machine, body : body});
+                    });
+                })
+            })
+    },
+
+    promise_to_fetch_a_client : function(target_machine, client_id){
+        var request_options = {
+            path : "/clients/" + client_id,
+            method : "GET",
+        }
+        return new Promise((resolve, reject)=>{
+                this.api.send_request(target_machine, request_options, resolve);
+            })
+            .then((res)=>{
+                return new Promise((resolve, reject)=>{
+                    console.log('GET A CLIENT FROM `'+ target_machine + '` RESPONSE:  '+ res.statusCode);
+                    var body = "";
+                    res.on('data', function (chunk) {
+                        body += chunk;
+                    });
+                    res.on('end', function() {
+                        // console.log(display.base + body);
+                        return resolve({target_machine : target_machine, body : body});
+                    });
+                })
+            })
+    },
+    promise_to_update_a_client : function(target_machine, updated_client){
+        // POST keystore/key, http://openhim.readthedocs.io/en/latest/dev-guide/api-ref.html#update-a-client
+        // per ryan critton's suggestion, replace client in full
+        // sends full new client to api
+        var request_options = {
+            path : "/clients/"+updated_client._id,
+            method : "PUT",
+            data : JSON.stringify(updated_client),
+            data_type : "json",
+        }
+        return new Promise((resolve, reject)=>{
+                this.api.send_request(target_machine, request_options, resolve);
+            })
+            .then((res)=>{
+                return new Promise((resolve, reject)=>{
+                    console.log('UPDATE CLIENT ON REMOTE `'+ target_machine + '`  RESPONSE: ' + res.statusCode);
+                    var body = "";
+                    res.on('data', function (chunk) {
+                        body += chunk;
+                    });
+                    res.on('end', function() {
+                        // console.log(display.base + body);
+                        return resolve({target_machine : target_machine, body : body, status : res.statusCode});
+                    });
+                })
+            })
+
+    },
 
     promise_to_get_trusted_certs : function(target_machine){
         ////////////////////////////////////

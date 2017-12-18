@@ -83,6 +83,8 @@ Note, this CLI will be triggered automatically if you install `openhim-cert-upda
         - remote is optional
     - define the `email` and `password` for each machine (required), identified by `host:port`, in the `config.users` object.
         - e.g., `"localhost:8080" : { "email" : "root@openhim.org",  "password" : "openhim-password" }`
+    - define which clients need to be updated to use the new certificate on each machine
+        - e.g., `"remote_host:8080" : ["client_id"]`
     - define the `paths.cert` and `paths.key` paths to the most up to date `cert` and `key` for this machine's OpenHIM installation
 
 ## Implementation

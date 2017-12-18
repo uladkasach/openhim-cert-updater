@@ -12,7 +12,12 @@
             "email" : "root@openhim.org",
             "password" : "openhim-password"
         }
-    }, 
+    },
+    "clients":{
+        "localhost:8080" : [],
+        "localhost:28080" : ["client_id"],
+        "localhost:38080" : ["client_id"],
+    },
     "machines":{
         "local":"localhost:8080",
         "remote":["localhost:28080","localhost:38080"]
