@@ -1,6 +1,5 @@
 //  openssl x509 -fingerprint -in /etc/ssl/certs/ohim-selfsigned.crt
 
-
 // Load config
 var config = require('./config/config.json');
 
@@ -15,6 +14,4 @@ var from_filesystem = {
     key : key,
     fingerprint : fingerprint,
 };
-
-
 console.log(fingerprint)
