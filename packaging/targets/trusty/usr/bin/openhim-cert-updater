@@ -1,35 +1,68 @@
 #!/bin/bash
 
+# sudo truncate -s 0 /usr/bin/openhim-cert-updater
+# sudo nano /usr/bin/openhim-cert-updater
+
 # ensure that this is being run as sudo
 if [ "$EUID" -ne 0 ]
   then echo "WARNING : openhim-cert-updater should be run as sudo"
   #exit - consider in future exiting if this is not true.
 fi
 
-echo "Starting openhim-cert-updater...";
-source $HOME/.nvm/nvm.sh && nvm use 6.11
 
 # Ensure openhim-cert-updater is installed
 DIRECTORY="/usr/share/openhim-cert-updater"
 CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
+CONFIGEXAMPLEFILE="/usr/share/openhim-cert-updater/config/config.example.json"
 if [ ! -d "$DIRECTORY" ]; then
     echo "openhim-cert-updater was not found at expected location ($DIRECTORY)."
     echo  "Are you sure its installed?"
     exit 1;
 fi
 
+create_from_example(){
+    #1. check if file already exists, if it does, ask user if they're sure they want to overwrite it
+    if [ -e "$CONFIGFILE" ]; then
+        while true; do
+            read -p "The 'config.json' file already exists. Are you sure you wish to over write it? (y/n)" yn
+            case $yn in
+                [Yy]* ) break;;
+                [Nn]* ) return;;
+                * ) echo "Please answer yes or no.";;
+            esac
+        done
+    fi
+    sudo /bin/cp "$CONFIGEXAMPLEFILE" "$CONFIGFILE"
+    return;
+}
 
 if [[ "$1" == "--config" || "$1" == "-c" ]]; then
-    echo "Starting configuration proces...";
-    echo " ";
-
-    if [[ "$2" == "--manual" || "$2" == "-m" ]]; then
+    if [[ "$2" == "--manual" || "$2" == "-m" || "$2" == "--open" || "$2" == "-o" ]]; then # -m is legacy option
+        # see if we need to create the file first
+        if [ ! -e "$CONFIGFILE" ]; then
+            create_from_example
+        fi
+        echo "Opening config file with nano...";
         sudo nano "$CONFIGFILE";
+    elif  [[ "$2" == "--rewrite" || "$2" == "-r" ]]; then
+        create_from_example
     else
-        cd "$DIRECTORY";
-        node "setup_config.js";
+        echo "--------------------------------------------------------------"
+        echo ""
+        echo "Configuration File Setup Information for Openhim-Cert-Updater"
+        echo ""
+        echo "Usage: sudo openhim-cert-updater -c [flag]"
+        echo " - use the flag '-o' to open the configuration file with nano."
+        echo " - use the flag '-r' to write the config.example.json file contents into the config.json file."
+        echo ""
+        echo "More information about configuration file can be found at https://github.com/uladkasach/openhim-cert-updater#setup-configjson"
+        echo ""
+        echo "--------------------------------------------------------------"
     fi
 else
+    echo "Starting openhim-cert-updater...";
+    source $HOME/.nvm/nvm.sh && nvm use 6.11
+
     # Ensure config file was created
     if [ ! -f "$CONFIGFILE" ]; then
         echo "The configuration file (config.json) was not found at the expected location."

@@ -2,7 +2,12 @@
 `openhim-cert-updater` is an NPM package that handles informing both local and remote OpenHIM installations about ssl certificate updates/renewals.
 
 ## Usage
-- after installing the application with the instructions below, run `sudo nodejs update_certificates.js`
+#### With Package Installation
+The package utilizes NVM to ensure that the script will be run in the appropriate nodejs environment. NVM is installed under the user `openhim_cert_updater` and so commands running the script must be run as that user. E.g.:
+- run updater check: `sudo su openhim_cert_updater bash -c 'sudo openhim-cert-updater'`
+- config file help: `sudo su openhim_cert_updater bash -c 'sudo openhim-cert-updater -c'`
+#### With Manual Installation
+- after installing the application manually with the instructions below, run `sudo nodejs update_certificates.js`
 
 ## Overview
 #### scripts
@@ -54,30 +59,11 @@
 2. Test it out
     - `sudo nodejs update_certificates.js`
 
-## Setup Config.json with the CLI
-Note, this CLI will be triggered automatically if you install `openhim-cert-updater` by package. It can also be triggered by running `openhim-cert-updater -c`
-- you will have to find where the cert and privkey for openhim / from certbot are stored
-    - on a machine w/ certs created by `letsencrypt`/`certbot`
-        - cert : `/etc/letsencrypt/live/<your_domain>/fullchain.pem`
-        - key : `/etc/letsencrypt/live/<your_domain>/privkey.pem`
-    - on a machine w/ certs created by `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ohim-selfsigned.key -out /etc/ssl/certs/ohim-selfsigned.crt`
-        - cert : `/etc/ssl/certs/ohim-selfsigned.crt`
-        - key : `/etc/ssl/private/ohim-selfsigned.key`
-- you will have to know the localhost path and authentication information (email and password) for a user w/ permissions to update the certificate on the local machine
-    - on a default installation:
-        - host : `localhost:8080`
-        - root user  
-            - email : `root@openhim.org`
-            - password : `openhim-password`
-- you will have to know the path and authentication information for similar user on relevant remote machines, if you want them to be "informed" on the update
-- if you mess up durring the configuration process, start over by calling the config CLI again w/ `openhim-cert-updater -c`
-- test installation by running `sudo openhim-cert-updater`.
-    - note, you should see the updater inform you that all is already up to date.
-
-## Setup Config.json Manually
+## Setup Config.json
 0. create a `config/config.json` file by copying the `config/config.example.json` file
-    - `cp config/config.example.json config/config.json`
+    - `openhim-cert-updater -c -r`
 1. edit the `config/config.json` to reflect your configuration
+    - the file can be opened in nano with `openhim-cert-updater -c -r`
     - define the `host:port` of each OpenHIM installation (local and remote) that need to be updated
         - local is required
         - remote is optional
@@ -86,6 +72,12 @@ Note, this CLI will be triggered automatically if you install `openhim-cert-upda
     - define which clients need to be updated to use the new certificate on each machine
         - e.g., `"remote_host:8080" : ["client_id"]`
     - define the `paths.cert` and `paths.key` paths to the most up to date `cert` and `key` for this machine's OpenHIM installation
+        - on a machine w/ certs created by `letsencrypt`/`certbot`
+            - cert : `/etc/letsencrypt/live/<your_domain>/fullchain.pem`
+            - key : `/etc/letsencrypt/live/<your_domain>/privkey.pem`
+        - on a machine w/ certs created by `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ohim-selfsigned.key -out /etc/ssl/certs/ohim-selfsigned.crt`
+            - cert : `/etc/ssl/certs/ohim-selfsigned.crt`
+            - key : `/etc/ssl/private/ohim-selfsigned.key`
 
 ## Implementation
 The script `update_certificates.js` does several things:
