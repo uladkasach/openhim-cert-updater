@@ -6,6 +6,7 @@
 The package utilizes NVM to ensure that the script will be run in the appropriate nodejs environment. NVM is installed under the user `openhim_cert_updater` and so commands running the script must be run as that user. E.g.:
 - run updater check: `sudo su openhim_cert_updater bash -c 'sudo openhim-cert-updater'`
 - config file help: `sudo su openhim_cert_updater bash -c 'sudo openhim-cert-updater -c'`
+
 #### With Manual Installation
 - after installing the application manually with the instructions below, run `sudo nodejs update_certificates.js`
 
@@ -58,6 +59,7 @@ The package utilizes NVM to ensure that the script will be run in the appropriat
     - See below
 2. Test it out
     - `sudo nodejs update_certificates.js`
+
 
 ## Setup Config.json
 0. create a `config/config.json` file by copying the `config/config.example.json` file
