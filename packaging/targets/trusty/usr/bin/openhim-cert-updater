@@ -10,6 +10,7 @@ if [ "$EUID" -ne 0 ]
 fi
 
 
+
 # Ensure openhim-cert-updater is installed
 DIRECTORY="/usr/share/openhim-cert-updater"
 CONFIGFILE="/usr/share/openhim-cert-updater/config/config.json"
@@ -24,7 +25,7 @@ create_from_example(){
     #1. check if file already exists, if it does, ask user if they're sure they want to overwrite it
     if [ -e "$CONFIGFILE" ]; then
         while true; do
-            read -p "The 'config.json' file already exists. Are you sure you wish to over write it? (y/n)" yn
+            read -p "The 'config.json' file already exists. Are you sure you wish to over write it? (y/n): " yn
             case $yn in
                 [Yy]* ) break;;
                 [Nn]* ) return;;
@@ -63,11 +64,16 @@ else
     echo "Starting openhim-cert-updater...";
     source $HOME/.nvm/nvm.sh && nvm use 6.11
 
+    # ensure that this is being run as root from openhim-cert-updater
+    if [[ ! -e $HOME/.nvm/nvm.sh ]]; then
+        echo "WARNING: NVM was not found. Are you sure this is being run from the openhim-cert-updater user?"
+    fi
+
     # Ensure config file was created
     if [ ! -f "$CONFIGFILE" ]; then
         echo "The configuration file (config.json) was not found at the expected location."
         echo "Are you sure it was created?"
-        echo "See https://github.com/uladkasach/openhim-cert-updater for details."
+        echo "Run 'openhim-cert-updater -c' for more information."
         exit 1;
     fi
 
