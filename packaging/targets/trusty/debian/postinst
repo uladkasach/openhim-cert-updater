@@ -1,5 +1,11 @@
 #!/bin/sh
 
+
+# create a user under which nvm will be installed and under which openhim-cert-updater will be run
+echo "Creating user openhim_cert_updater and its home directory...";
+sudo useradd -d /home/openhim_cert_updater -m openhim_cert_updater || true
+
+
 # update sudo permissions, now that we added a sudoers.d file
 sudo service sudo restart
 

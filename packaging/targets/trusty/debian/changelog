@@ -1,3 +1,9 @@
+openhim-cert-updater (1.2.9~trusty) trusty; urgency=medium
+
+  * Release Debian Build -1.2.9.
+
+ -- Ulad Kasach <uladkasach@gmail.com>  Wed, 20 Dec 2017 14:44:15 -0500
+
 openhim-cert-updater (1.2.8~trusty) trusty; urgency=medium
 
   * Release Debian Build -1.2.8.
