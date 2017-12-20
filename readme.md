@@ -39,14 +39,27 @@ The package utilizes NVM to ensure that the script will be run in the appropriat
         - `sudo openhim-cert-updater -h 'touch ~/done.example'` will create the file `done.example` in your home directory IF the local certificate was updated  
 
 
-## Installation From PPA
+## Installation From PPA Package
 0. Install from PPA
     - `sudo add-apt-repository ppa:uladkasach/dev && sudo apt-get update && sudo apt-get -y install openhim-cert-updater`
 1. Setup `config.json`
+    - see below
 2. Test installation
     - `openhim-cert-updater`
 
-## Installation From Source
+## Installation From Source Package
+0. Download `.deb` file
+    - `wget https://github.com/uladkasach/openhim-cert-updater/releases/download/v1.2.8/openhim-cert-updater_1.2.8~trusty_amd64.deb`
+1. Install `.deb` file
+    - `sudo dpkg -i openhim-cert-updater_1.2.8~trusty_amd64.deb`
+2. Install dependencies
+    - `sudo apt-get install -f`
+3. Setup `config.json`
+    - see below
+4. Test installation
+    - `openhim-cert-updater`
+
+## Installation From Source Code
 00. Prerequisites  
     - [Install node and npm](http://letmegooglethatforyou.com/?q=how+to+install+node+and+npm)
 0. Install
